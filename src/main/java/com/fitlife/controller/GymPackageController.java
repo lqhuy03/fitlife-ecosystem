@@ -1,5 +1,6 @@
 package com.fitlife.controller;
 
+import com.fitlife.dto.ApiResponse;
 import com.fitlife.dto.GymPackageCreationRequest;
 import com.fitlife.dto.GymPackageResponse;
 import com.fitlife.service.GymPackageService;
@@ -17,9 +18,17 @@ public class GymPackageController {
     private final GymPackageService gymPackageService;
 
     @PostMapping
-    // CHÚ Ý CHỮ @Valid Ở ĐÂY LÀ LINH HỒN CỦA BÀI TOÁN
-    public ResponseEntity<GymPackageResponse> createPackage(@Valid @RequestBody GymPackageCreationRequest request) {
-        GymPackageResponse response = gymPackageService.createPackage(request);
+    // Đổi kiểu trả về thành ApiResponse<GymPackageResponse>
+    public ResponseEntity<ApiResponse<GymPackageResponse>> createPackage(@Valid @RequestBody GymPackageCreationRequest request) {
+        GymPackageResponse result = gymPackageService.createPackage(request);
+
+        // Bọc kết quả vào trong ApiResponse
+        ApiResponse<GymPackageResponse> response = ApiResponse.<GymPackageResponse>builder()
+                .code(HttpStatus.CREATED.value()) // 201
+                .message("Package created successfully")
+                .data(result)
+                .build();
+
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 }
