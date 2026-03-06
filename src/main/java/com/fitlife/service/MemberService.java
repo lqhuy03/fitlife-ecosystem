@@ -8,6 +8,10 @@ import com.fitlife.repository.MemberRepository;
 import com.fitlife.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 
 @Service
 @RequiredArgsConstructor
@@ -15,6 +19,7 @@ public class MemberService {
 
     private final MemberRepository memberRepository;
     private final UserRepository userRepository; // Inject UserRepository here!
+    private final CloudinaryService cloudinaryService;
 
     public MemberResponse createMember(MemberCreationRequest request) {
         // 1. Validate if phone number already exists
@@ -47,5 +52,21 @@ public class MemberService {
                 .email(savedMember.getEmail())
                 .status(savedMember.getStatus())
                 .build();
+    }
+
+    @Transactional
+    public String updateAvatar(String username, MultipartFile file) throws IOException {
+        // 1. Tìm Member đang đăng nhập
+        Member member = memberRepository.findByUserUsername(username)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy hội viên"));
+
+        // 2. Đẩy ảnh lên Cloudinary và lấy URL
+        String avatarUrl = cloudinaryService.uploadImage(file);
+
+        // 3. Cập nhật vào Database
+        member.setAvatarUrl(avatarUrl);
+        memberRepository.save(member);
+
+        return avatarUrl;
     }
 }

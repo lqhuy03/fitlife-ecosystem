@@ -15,13 +15,15 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: validate # 1. TƯỚC QUYỀN HIBERNATE (Chỉ cho phép kiểm tra, KHÔNG tạo bảng)
+      ddl-auto: validate # Chỉ cho phép kiểm tra, KHÔNG tạo bảng
 
-    flyway:
-      enabled: true              # 2. BẬT FLYWAY
-      baseline-on-migrate: true  # 3. CHẤP NHẬN BASELINE
+  # SỬA LỖI Ở ĐÂY: flyway phải nằm ngoài jpa
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
 
 cloudinary:
-  cloud-name: dvseaoy5k
-  api-key: 548378961766311
-  api-secret: GqtAOdXDUzX9sY5Eqg6LWrb_oKU
+  # SỬA LỖI Ở ĐÂY: Bọc ngoặc kép để YAML hiểu đây là Chuỗi (String), không phải Số
+  cloud-name: "dvseaoy5k"
+  api-key: "548378961766311"
+  api-secret: "GqtAOdXDUzX9sY5Eqg6LWrb_oKU"
