@@ -27,8 +27,8 @@ cloudinary:
   api-key: "548378961766311"
   api-secret: "GqtAOdXDUzX9sY5Eqg6LWrb_oKU"
 
-# Cấu hình Gemini chuẩn xác dựa trên kết quả PowerShell của em
+# Cấu hình Gemini chuẩn xác dựa trên kết quả PowerShell của emmembers
 gemini:
-  api-key: "AIzaSyAbrB4a4NDDNOz2jpVWuQt6aFVEWLuV3BY"
+  api-key: "AIzaSyACXvlH-Vikni74o0GYj5CSFg1dFs1fOcU"
   # SỬ DỤNG v1beta và gemini-2.5-flash (đúng như danh sách model em list được)
   api-url: "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent"

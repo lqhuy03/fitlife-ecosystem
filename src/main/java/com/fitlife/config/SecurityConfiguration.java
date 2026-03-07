@@ -11,7 +11,6 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -21,32 +20,34 @@ import java.util.List;
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
-public class SecurityConfig {
+public class SecurityConfiguration {
 
     private final JwtAuthenticationFilter jwtAuthFilter;
-    private final AuthenticationProvider authenticationProvider; // Inject từ ApplicationConfig
+    private final AuthenticationProvider authenticationProvider;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .csrf(AbstractHttpConfigurer::disable) //
+                .csrf(AbstractHttpConfigurer::disable)
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) //
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        // CHỈ CẦN THẾ NÀY: Spring sẽ tự hiểu nó nằm sau /api/v1
+                        // Spring Security tự động bóc tách context-path (/api/v1)
+                        // Nên các matcher dưới đây chỉ cần bắt đầu từ /...
+
                         .requestMatchers("/auth/**").permitAll()
+                        .requestMatchers("/ai/**").permitAll() // Cho phép tất cả API AI để test
                         .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
 
-                        // Phân quyền cho Sức khỏe (Bỏ /api/v1)
+                        // Các API yêu cầu Role cụ thể
                         .requestMatchers("/health/**").hasAnyRole("MEMBER", "STAFF", "ADMIN")
-
                         .requestMatchers(HttpMethod.POST, "/packages/**").hasAnyRole("ADMIN", "STAFF")
                         .requestMatchers("/checkin/**").hasAnyRole("ADMIN", "STAFF")
 
                         .anyRequest().authenticated()
                 )
                 .authenticationProvider(authenticationProvider)
-                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class); //
+                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
@@ -54,17 +55,13 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        // 1. Cho phép các domain của Frontend (React thường chạy 3000, Vite chạy 5173)
         configuration.setAllowedOrigins(List.of("http://localhost:3000", "http://localhost:5173"));
-        // 2. Cho phép các method HTTP
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-        // 3. Cho phép gửi các Header (đặc biệt là Authorization chứa Token)
         configuration.setAllowedHeaders(List.of("Authorization", "Content-Type", "Accept"));
-        // 4. Cho phép gửi Cookie/Credentials nếu cần
         configuration.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", configuration); // Áp dụng cho mọi endpoint
+        source.registerCorsConfiguration("/**", configuration);
         return source;
     }
 }
