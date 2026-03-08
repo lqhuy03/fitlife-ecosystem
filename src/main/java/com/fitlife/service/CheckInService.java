@@ -1,6 +1,5 @@
 package com.fitlife.service;
 
-import com.fitlife.dto.CheckInRequest;
 import com.fitlife.dto.CheckInResponse;
 import com.fitlife.entity.CheckInHistory;
 import com.fitlife.entity.Member;
@@ -14,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Optional;
 
 @Service
@@ -24,14 +24,31 @@ public class CheckInService {
     private final SubscriptionRepository subscriptionRepository;
     private final CheckInHistoryRepository checkInHistoryRepository;
 
-    @Transactional // THÊM DÒNG NÀY: Đảm bảo an toàn dữ liệu
-    public CheckInResponse processCheckIn(CheckInRequest request) {
+    @Transactional // Đảm bảo an toàn dữ liệu
+    public CheckInResponse processCheckIn(Long memberId, String actorUsername) {
         // 1. Tìm ai đang quẹt thẻ
-        Member member = memberRepository.findById(request.getMemberId())
+        Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new RuntimeException("Member not found. Fake ID card!"));
 
         LocalDateTime now = LocalDateTime.now();
         LocalDate today = LocalDate.now();
+
+        // 1.5 KIỂM TRA SPAM: Hôm nay đã vào cửa thành công chưa?
+        LocalDateTime startOfDay = today.atStartOfDay();
+        LocalDateTime endOfDay = today.atTime(LocalTime.MAX);
+
+        Optional<CheckInHistory> alreadyCheckedIn = checkInHistoryRepository
+                .findSuccessfulCheckInToday(member, startOfDay, endOfDay);
+
+        if (alreadyCheckedIn.isPresent()) {
+            return CheckInResponse.builder()
+                    .memberId(member.getId())
+                    .memberName(member.getFullName())
+                    .checkInTime(now)
+                    .status("ALREADY_CHECKED_IN")
+                    .message("Bạn đã điểm danh thành công trong hôm nay rồi. Chúc buổi tập vui vẻ!")
+                    .build();
+        }
 
         // 2. Mặc định là Cấm Cửa
         String accessStatus = "ACCESS_DENIED";
@@ -59,6 +76,7 @@ public class CheckInService {
                 .member(member)
                 .checkInTime(now)
                 .status(accessStatus) // Lưu lại kết quả
+                // .checkedInBy(actorUsername) // Bỏ comment dòng này nếu trong Entity em đã thêm cột này nhé
                 .build();
         checkInHistoryRepository.save(history);
 

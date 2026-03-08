@@ -38,6 +38,11 @@ public class User implements UserDetails {
     @Column(name = "status", nullable = false, length = 20)
     private String status; // "ACTIVE", "INACTIVE"
 
+    @OneToOne(mappedBy = "user")
+    @com.fasterxml.jackson.annotation.JsonIgnore // Rất quan trọng: Ngăn chặn lỗi lặp vô tận (Infinite Recursion) khi trả về JSON
+    @lombok.ToString.Exclude // Ngăn lỗi StackOverflow khi in log
+    private Member member;
+
     // Functions to implement UserDetails interface for Spring Security
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

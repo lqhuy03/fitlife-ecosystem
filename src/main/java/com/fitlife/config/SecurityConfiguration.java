@@ -43,7 +43,7 @@ public class SecurityConfiguration {
 
                         // 3. Administration
                         .requestMatchers(HttpMethod.POST, "/packages/**").hasAnyRole("ADMIN", "STAFF")
-                        .requestMatchers("/checkin/**").hasAnyRole("ADMIN", "STAFF")
+                        .requestMatchers("/checkin/**").hasAnyRole("ADMIN", "STAFF", "MEMBER")
 
                         .anyRequest().authenticated()
                 )
