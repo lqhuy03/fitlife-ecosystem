@@ -20,10 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Slf4j
 @Service
@@ -122,7 +119,7 @@ public class AiService {
                     .status(WorkoutPlan.PlanStatus.ACTIVE)
                     .build();
 
-            List<WorkoutSession> sessions = new ArrayList<>();
+            Set<WorkoutSession> sessions = new LinkedHashSet<>();
             JsonNode scheduleNode = root.path("workoutSchedule");
 
             for (JsonNode dayNode : scheduleNode) {
@@ -133,7 +130,7 @@ public class AiService {
                         .workoutPlan(officialPlan)
                         .build();
 
-                List<WorkoutDetail> details = new ArrayList<>();
+                Set<WorkoutDetail> details = new LinkedHashSet<>();
                 JsonNode exercisesNode = dayNode.path("exercises");
 
                 for (JsonNode exNode : exercisesNode) {

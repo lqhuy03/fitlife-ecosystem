@@ -5,7 +5,9 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Đại diện cho một buổi tập trong ngày (ví dụ: Thứ 2 tập Ngực)
@@ -26,11 +28,15 @@ public class WorkoutSession {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "plan_id")
-    @ToString.Exclude // Avoid bug loop when print log
     @JsonBackReference
+    @EqualsAndHashCode.Exclude // THÊM DÒNG NÀY
+    @ToString.Exclude
     private WorkoutPlan workoutPlan;
 
-    @OneToMany(mappedBy = "session", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "session", cascade = CascadeType.ALL)
     @JsonManagedReference
-    private List<WorkoutDetail> details;
+    @Builder.Default
+    @EqualsAndHashCode.Exclude // THÊM DÒNG NÀY
+    @ToString.Exclude
+    private Set<WorkoutDetail> details = new LinkedHashSet<>();
 }

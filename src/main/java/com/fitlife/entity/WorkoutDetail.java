@@ -27,7 +27,8 @@ public class WorkoutDetail {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "session_id")
+    @JsonBackReference
+    @EqualsAndHashCode.Exclude // THÊM DÒNG NÀY
     @ToString.Exclude
-    @JsonBackReference // Block loop JSON
     private WorkoutSession session;
 }
