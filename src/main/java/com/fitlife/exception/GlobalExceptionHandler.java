@@ -15,18 +15,18 @@ import java.util.Map;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    // 1. CATCHING VALIDATION ERROR (@Valid - Example: Empty name, wrong email format)
+    // 1. CATCHING VALIDATION ERROR (@Valid)
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ApiResponse<Map<String, String>>> handleValidationExceptions(MethodArgumentNotValidException ex) {
         Map<String, String> errors = new HashMap<>();
 
         ex.getBindingResult().getAllErrors().forEach((error) -> {
-            String fieldName = ((FieldError) error).getField();
+            // Kiểm tra an toàn trước khi ép kiểu để tránh ClassCastException
+            String fieldName = (error instanceof FieldError) ? ((FieldError) error).getField() : error.getObjectName();
             String errorMessage = error.getDefaultMessage();
             errors.put(fieldName, errorMessage);
         });
 
-        // Return HTTP 400 with a body containing the field errors
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
                 ApiResponse.<Map<String, String>>builder()
                         .code(400)
@@ -36,28 +36,37 @@ public class GlobalExceptionHandler {
         );
     }
 
-    // 2. CATCHING AUTHENTICATION ERROR (VD: Wrong username or password)
+    // 2. CATCHING AUTHENTICATION ERROR
     @ExceptionHandler(BadCredentialsException.class)
     public ResponseEntity<ApiResponse<String>> handleBadCredentialsException(BadCredentialsException ex) {
-        // Return HTTP 401 with a message indicating authentication failure
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
                 ApiResponse.<String>builder()
                         .code(401)
                         .message("Tài khoản hoặc mật khẩu không chính xác!")
-                        .data(null)
                         .build()
         );
     }
 
-    // 3. CATCHING RUNTIME EXCEPTION (VD: Username already exists, or any other custom exception thrown from Service layer)
-    @ExceptionHandler(RuntimeException.class)
-    public ResponseEntity<ApiResponse<String>> handleRuntimeException(RuntimeException ex) {
-        // Return HTTP 400 with the exception message as the response body
+    // 3. CATCHING CUSTOM BUSINESS EXCEPTION (Thay thế cho RuntimeException cũ)
+    // Lưu ý: Bạn cần tạo class AppException extends RuntimeException trong dự án
+    @ExceptionHandler(AppException.class)
+    public ResponseEntity<ApiResponse<String>> handleAppException(AppException ex) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
                 ApiResponse.<String>builder()
-                        .code(400)
+                        .code(400) // Hoặc lấy mã code từ chính AppException nếu bạn thiết kế linh hoạt hơn
                         .message(ex.getMessage())
-                        .data(null)
+                        .build()
+        );
+    }
+
+    // 4. CATCH-ALL: BẮT MỌI LỖI HỆ THỐNG KHÔNG MONG MUỐN (NPE, DB Error...)
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ApiResponse<String>> handleGlobalException(Exception ex) {
+        // Gợi ý: Ghi log lỗi tại đây (log.error("Lỗi hệ thống: ", ex))
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
+                ApiResponse.<String>builder()
+                        .code(500)
+                        .message("Đã có lỗi hệ thống xảy ra. Vui lòng thử lại sau!")
                         .build()
         );
     }

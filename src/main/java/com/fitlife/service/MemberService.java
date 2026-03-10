@@ -27,19 +27,15 @@ public class MemberService {
     private final UserRepository userRepository;
     private final CloudinaryService cloudinaryService;
 
-    // --- 1. HÀM CŨ: TẠO HỘI VIÊN ---
     @Transactional
     public MemberResponse createMember(MemberCreationRequest request) {
-        // Validate if phone number already exists
         if (memberRepository.existsByPhone(request.getPhone())) {
-            throw new RuntimeException("Phone number already registered.");
+            throw new RuntimeException("Số điện thoại đã được đăng ký.");
         }
 
-        // Fetch the User entity from DB
         User user = userRepository.findById(request.getUserId())
-                .orElseThrow(() -> new RuntimeException("User not found with ID: " + request.getUserId()));
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy người dùng ID: " + request.getUserId()));
 
-        // Map DTO to Entity
         Member newMember = Member.builder()
                 .user(user)
                 .fullName(request.getFullName())
@@ -48,86 +44,68 @@ public class MemberService {
                 .status("ACTIVE")
                 .build();
 
-        // Save to Database
-        Member savedMember = memberRepository.save(newMember);
-
-        // Map Entity back to Response DTO
-        return MemberResponse.builder()
-                .id(savedMember.getId())
-                .userId(savedMember.getUser().getId())
-                .fullName(savedMember.getFullName())
-                .phone(savedMember.getPhone())
-                .email(savedMember.getEmail())
-                .status(savedMember.getStatus())
-                .build();
+        memberRepository.save(newMember);
+        return mapToMemberResponse(newMember);
     }
 
-    // --- 2. HÀM CŨ: CẬP NHẬT ẢNH ĐẠI DIỆN ---
     @Transactional
     public String updateAvatar(String username, MultipartFile file) throws IOException {
-        // FIX LỖI ĐỎ 1: Dùng userRepository để lấy User (chắc chắn có hàm này trả về Optional)
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy User"));
 
         Member member = user.getMember();
-        if (member == null) {
-            throw new RuntimeException("Không tìm thấy hội viên");
-        }
+        if (member == null) throw new RuntimeException("Không tìm thấy thông tin hội viên");
 
-        // Đẩy ảnh lên Cloudinary (Chỉ định folder lưu trữ là 'avatars')
-        String avatarUrl = cloudinaryService.uploadImage(file);
+        // Gợi ý: Xóa ảnh cũ trên Cloudinary nếu có để tiết kiệm dung lượng
+        // if (member.getAvatarUrl() != null) { cloudinaryService.deleteImage(publicId); }
 
-        // Cập nhật URL vào Database
+        String avatarUrl = cloudinaryService.uploadImage(file, "avatars", "member_" + member.getId());
         member.setAvatarUrl(avatarUrl);
-        memberRepository.save(member);
-
+        // Không nhất thiết phải gọi save() vì có @Transactional, Hibernate sẽ tự dirty check
         return avatarUrl;
     }
 
-    // --- 3. HÀM MỚI: PHÂN TRANG & LỌC DANH SÁCH HỘI VIÊN DÀNH CHO ADMIN ---
     @Transactional(readOnly = true)
     public PageResponse<MemberResponse> getAllMembers(int page, int size, String sortBy, String sortDir, String keyword) {
+        // Bảo vệ logic phân trang: Đảm bảo page không bao giờ < 1
+        int pageIndex = Math.max(0, page - 1);
 
-        // Cấu hình Sắp xếp (Tăng dần / Giảm dần)
         Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name())
                 ? Sort.by(sortBy).ascending()
                 : Sort.by(sortBy).descending();
 
-        // Cấu hình Phân trang (Lưu ý: Spring Data JPA đánh số trang từ 0, nên FE truyền lên 1 thì BE phải trừ 1)
-        Pageable pageable = PageRequest.of(page - 1, size, sort);
-
-        // Khai báo đối tượng Page để chứa kết quả từ Database
+        Pageable pageable = PageRequest.of(pageIndex, size, sort);
         Page<Member> memberPage;
 
-        // Kiểm tra xem Admin có truyền từ khóa tìm kiếm (keyword) không?
         if (keyword != null && !keyword.trim().isEmpty()) {
-            // Nếu có tìm kiếm thì gọi hàm tìm kiếm tương đối (LIKE %keyword%)
             memberPage = memberRepository.findByFullNameContainingIgnoreCase(keyword.trim(), pageable);
         } else {
-            // Nếu không tìm kiếm gì thì lấy ra toàn bộ
             memberPage = memberRepository.findAll(pageable);
         }
 
-        // Chuyển đổi dữ liệu từ List<Member> (Entity) sang List<MemberResponse> (DTO)
         List<MemberResponse> content = memberPage.getContent().stream()
-                .map(member -> MemberResponse.builder()
-                        .id(member.getId())
-                        .userId(member.getUser() != null ? member.getUser().getId() : null)
-                        .fullName(member.getFullName())
-                        .email(member.getEmail())
-                        .phone(member.getPhone())
-                        .status(member.getStatus())
-                        .avatarUrl(member.getAvatarUrl())
-                        .build())
+                .map(this::mapToMemberResponse) // Tách hàm mapping cho sạch code
                 .toList();
 
-        // Đóng gói tất cả vào trong hộp PageResponse trả về cho Client
         return PageResponse.<MemberResponse>builder()
                 .currentPage(page)
                 .totalPages(memberPage.getTotalPages())
                 .pageSize(memberPage.getSize())
                 .totalElements(memberPage.getTotalElements())
                 .data(content)
+                .build();
+    }
+
+    // Hàm bổ trợ để tái sử dụng logic mapping
+    private MemberResponse mapToMemberResponse(Member member) {
+        return MemberResponse.builder()
+                .id(member.getId())
+                .userId(member.getUser() != null ? member.getUser().getId() : null)
+                .fullName(member.getFullName())
+                .email(member.getEmail())
+                .phone(member.getPhone())
+                .status(member.getStatus())
+                .avatarUrl(member.getAvatarUrl())
                 .build();
     }
 }

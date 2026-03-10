@@ -15,11 +15,24 @@ public class CloudinaryService {
 
     private final Cloudinary cloudinary;
 
-    public String uploadImage(MultipartFile file) throws IOException {
-        // Upload file lên Cloudinary
-        Map uploadResult = cloudinary.uploader().upload(file.getBytes(), ObjectUtils.emptyMap());
+    /**
+     * @param file       File ảnh từ Client
+     * @param folderName Tên thư mục con (Vd: "avatars", "packages")
+     * @param publicId   Tên file cố định (Vd: "member_1") để ghi đè ảnh cũ
+     */
+    public String uploadImage(MultipartFile file, String folderName, String publicId) throws IOException {
+        try {
+            Map uploadResult = cloudinary.uploader().upload(file.getBytes(),
+                    ObjectUtils.asMap(
+                            "folder", "fitlife/" + folderName, // Tổ chức thư mục
+                            "public_id", publicId,             // Định danh file
+                            "overwrite", true,                 // Ghi đè nếu đã tồn tại
+                            "resource_type", "image"
+                    ));
+            return uploadResult.get("secure_url").toString();
 
-        // Lấy đường dẫn URL an toàn (https) trả về
-        return uploadResult.get("secure_url").toString();
+        } catch (IOException e) {
+            throw new RuntimeException("Lỗi khi tải ảnh lên đám mây: " + e.getMessage());
+        }
     }
 }
