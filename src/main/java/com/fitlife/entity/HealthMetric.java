@@ -28,6 +28,8 @@ public class HealthMetric {
     private double height;
     private double bmi;
 
+
+
     @Column(name = "recorded_at")
     private LocalDateTime recordedAt;
 }

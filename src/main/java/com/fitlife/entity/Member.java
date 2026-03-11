@@ -3,6 +3,8 @@ package com.fitlife.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.List;
+
 @Entity
 @Table(name = "members")
 @Getter
@@ -34,4 +36,18 @@ public class Member {
 
     @Column(name = "avatar_url")
     private String avatarUrl;
+
+    private Double height;
+    private Double weight;
+
+    @OneToMany(mappedBy = "member", fetch = FetchType.LAZY)
+    private List<Subscription> subscriptions;
+
+    public Subscription getActiveSubscription() {
+        if (subscriptions == null) return null;
+        return subscriptions.stream()
+                .filter(sub -> "ACTIVE".equals(sub.getStatus()))
+                .findFirst()
+                .orElse(null);
+    }
 }
