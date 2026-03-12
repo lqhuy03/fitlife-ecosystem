@@ -21,10 +21,13 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
 
     Optional<Member> findByUserUsername(String username);
 
+    Optional<Member> findByEmail(String email);
+
     @Query("SELECT m FROM Member m LEFT JOIN FETCH m.user WHERE LOWER(m.fullName) LIKE LOWER(CONCAT('%', :keyword, '%'))")
     Page<Member> findByFullNameContainingIgnoreCase(@Param("keyword") String keyword, Pageable pageable);
 
     long countByStatus(String status);
+
 
 }
 

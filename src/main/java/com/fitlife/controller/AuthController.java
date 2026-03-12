@@ -1,9 +1,6 @@
 package com.fitlife.controller;
 
-import com.fitlife.dto.ApiResponse;
-import com.fitlife.dto.LoginRequest;
-import com.fitlife.dto.LoginResponse;
-import com.fitlife.dto.RegisterRequest;
+import com.fitlife.dto.*;
 import com.fitlife.service.AuthService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -47,5 +44,25 @@ public class AuthController {
                         .data(result)
                         .build()
                 );
+    }
+
+    @PostMapping("/forgot-password")
+    public ResponseEntity<ApiResponse<String>> forgotPassword(@Valid @RequestBody ForgotPasswordRequest request) {
+        String result = authService.forgotPassword(request);
+        return ResponseEntity.ok(ApiResponse.<String>builder()
+                .code(200)
+                .message("Thành công")
+                .data(result)
+                .build());
+    }
+
+    @PostMapping("/reset-password")
+    public ResponseEntity<ApiResponse<String>> resetPassword(@Valid @RequestBody ResetPasswordRequest request) {
+        String result = authService.resetPassword(request);
+        return ResponseEntity.ok(ApiResponse.<String>builder()
+                .code(200)
+                .message("Thành công")
+                .data(result)
+                .build());
     }
 }

@@ -6,6 +6,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
 
@@ -37,6 +38,13 @@ public class User implements UserDetails {
 
     @Column(name = "status", nullable = false, length = 20)
     private String status; // "ACTIVE", "INACTIVE"
+
+    @Column(name = "reset_token", length = 10)
+    private String resetToken;
+
+    @Column(name = "reset_token_expiry")
+    private LocalDateTime resetTokenExpiry;
+
 
     @OneToOne(mappedBy = "user")
     @com.fasterxml.jackson.annotation.JsonIgnore // Rất quan trọng: Ngăn chặn lỗi lặp vô tận (Infinite Recursion) khi trả về JSON
