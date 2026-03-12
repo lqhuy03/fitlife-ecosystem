@@ -1,14 +1,14 @@
 package com.fitlife.service;
 
-import com.fitlife.dto.ForgotPasswordRequest;
-import com.fitlife.dto.LoginRequest;
-import com.fitlife.dto.LoginResponse;
-import com.fitlife.dto.RegisterRequest;
-import com.fitlife.dto.ResetPasswordRequest;
+import com.fitlife.dto.*;
 import com.fitlife.entity.Member;
 import com.fitlife.entity.User;
 import com.fitlife.repository.MemberRepository;
 import com.fitlife.repository.UserRepository;
+import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
+import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
+import com.google.api.client.http.javanet.NetHttpTransport;
+import com.google.api.client.json.gson.GsonFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
