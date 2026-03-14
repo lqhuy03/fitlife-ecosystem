@@ -2,6 +2,7 @@ package com.fitlife.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fitlife.dto.AiWorkoutRequest;
 import com.fitlife.entity.*;
 import com.fitlife.repository.AiPlanRepository;
@@ -42,20 +43,24 @@ public class AiService {
 
     /**
      * Giai đoạn 1: Gọi AI tạo phác đồ và lưu vào lịch sử (JSON)
+     * Nhận username từ Controller để truy vấn thông tin Member an toàn qua Token.
      */
     @Transactional
-    public JsonNode generateWorkoutPlan(AiWorkoutRequest request) {
-        Member member = memberRepository.findById(request.getMemberId())
+    public JsonNode generateWorkoutPlan(String username, AiWorkoutRequest request) {
+
+        // 1. Tìm Member bằng username từ JWT Token
+        Member member = memberRepository.findByUserUsername(username)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy hội viên"));
 
+        // 2. Kiểm tra chỉ số sức khỏe mới nhất để AI có dữ liệu phân tích BMI
         HealthMetric latestMetric = healthMetricRepository.findFirstByMemberOrderByRecordedAtDesc(member)
-                .orElseThrow(() -> new RuntimeException("Hội viên chưa có chỉ số BMI..."));
+                .orElseThrow(() -> new RuntimeException("Hội viên chưa có chỉ số sức khỏe. Vui lòng cập nhật chiều cao/cân nặng tại Dashboard."));
 
+        // 3. Xây dựng câu lệnh (Prompt) gửi tới Gemini
         String prompt = buildPrompt(member, latestMetric, request);
 
-        // Payload chuẩn hóa cho v1beta
+        // 4. Chuẩn bị Payload và Headers
         Map<String, Object> requestBody = createGeminiPayload(prompt);
-
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         HttpEntity<Map<String, Object>> entity = new HttpEntity<>(requestBody, headers);
@@ -63,35 +68,46 @@ public class AiService {
         String fullUrl = geminiApiUrl + "?key=" + geminiApiKey;
 
         try {
-            log.info("===> Đang gửi yêu cầu tới Gemini 2.5 Flash cho: {}", member.getFullName());
+            log.info("===> Đang gửi yêu cầu tới Gemini cho: {}", member.getFullName());
             ResponseEntity<String> response = restTemplate.postForEntity(fullUrl, entity, String.class);
 
+            // 5. Bóc tách text trả về từ cấu hình JSON của Google Gemini
             JsonNode rootNode = objectMapper.readTree(response.getBody());
             String aiResponseText = rootNode.at("/candidates/0/content/parts/0/text").asText();
 
-            // Làm sạch JSON (Xử lý trường hợp AI trả về Markdown)
+            // 6. Làm sạch JSON (Xử lý trường hợp AI trả về có bọc ký tự Markdown ```json)
             String cleanJson = extractJson(aiResponseText);
 
-            // Lưu vào bảng lịch sử AI
+            // 7. Lưu vào bảng lịch sử AI_WORKOUT_PLANS
             AiWorkoutPlan planHistory = AiWorkoutPlan.builder()
                     .member(member)
                     .goal(request.getGoal())
                     .planData(cleanJson)
                     .createdAt(LocalDateTime.now())
                     .build();
-            aiPlanRepository.save(planHistory);
 
-            log.info("===> Đã lưu phác đồ AI vào lịch sử.");
-            return objectMapper.readTree(cleanJson);
+            // Lưu và lấy lại đối tượng đã có ID tự sinh từ DB
+            planHistory = aiPlanRepository.save(planHistory);
+
+            log.info("===> Đã lưu phác đồ AI vào lịch sử thành công.");
+
+            // 8. ĐẶC BIỆT: Đính kèm planId vào JSON để Frontend nhận được và có thể gọi API Activate ngay sau đó
+            JsonNode resultNode = objectMapper.readTree(cleanJson);
+            if (resultNode.isObject()) {
+                ((ObjectNode) resultNode).put("planId", planHistory.getId());
+            }
+
+            return resultNode;
 
         } catch (Exception e) {
             log.error("Lỗi AI Service: {}", e.getMessage());
-            throw new RuntimeException("Hệ thống AI đang bận hoặc gặp sự cố định dạng.");
+            throw new RuntimeException("Hệ thống AI đang bận hoặc phản hồi không đúng định dạng. Vui lòng thử lại sau.");
         }
     }
 
     /**
-     * Giai đoạn 2: Bóc tách JSON để áp dụng vào lịch tập chính thức
+     * Giai đoạn 2: Bóc tách JSON từ lịch sử và áp dụng vào bảng WorkoutPlan chính thức.
+     * Thao tác này sẽ thay đổi lịch tập của Member trên Dashboard.
      */
     @Transactional
     public void activatePlan(Long aiPlanId) {
@@ -103,14 +119,14 @@ public class AiService {
         try {
             JsonNode root = objectMapper.readTree(aiPlanRecord.getPlanData());
 
-            // 1. Hủy các lịch tập ACTIVE cũ
+            // 1. Hủy các lịch tập đang ACTIVE cũ của Member
             workoutPlanRepository.findByMemberAndStatus(member, WorkoutPlan.PlanStatus.ACTIVE)
                     .ifPresent(p -> {
                         p.setStatus(WorkoutPlan.PlanStatus.CANCELLED);
                         workoutPlanRepository.save(p);
                     });
 
-            // 2. Tạo WorkoutPlan chính thức
+            // 2. Khởi tạo WorkoutPlan chính thức
             WorkoutPlan officialPlan = WorkoutPlan.builder()
                     .name("Lịch tập AI: " + aiPlanRecord.getGoal())
                     .description(root.path("advice").asText())
@@ -122,8 +138,8 @@ public class AiService {
             Set<WorkoutSession> sessions = new LinkedHashSet<>();
             JsonNode scheduleNode = root.path("workoutSchedule");
 
+            // 3. Duyệt qua từng ngày tập trong JSON
             for (JsonNode dayNode : scheduleNode) {
-                // 3. Tạo Session cho từng ngày tập
                 WorkoutSession session = WorkoutSession.builder()
                         .dayOfWeek(dayNode.path("day").asText())
                         .focusArea(dayNode.path("focus").asText())
@@ -133,8 +149,8 @@ public class AiService {
                 Set<WorkoutDetail> details = new LinkedHashSet<>();
                 JsonNode exercisesNode = dayNode.path("exercises");
 
+                // 4. Duyệt qua từng bài tập trong ngày
                 for (JsonNode exNode : exercisesNode) {
-                    // 4. Tạo chi tiết bài tập từ JSON
                     WorkoutDetail detail = WorkoutDetail.builder()
                             .exercise_name(exNode.path("name").asText())
                             .sets(exNode.path("sets").asInt())
@@ -150,21 +166,24 @@ public class AiService {
 
             officialPlan.setSessions(sessions);
             workoutPlanRepository.save(officialPlan);
-            log.info("===> Lịch tập chính thức đã được kích hoạt cho: {}", member.getFullName());
+            log.info("===> Lịch tập AI đã trở thành lịch chính thức cho hội viên: {}", member.getFullName());
 
         } catch (Exception e) {
             log.error("Lỗi Kích hoạt: {}", e.getMessage());
-            throw new RuntimeException("Cấu trúc phác đồ không tương thích để kích hoạt.");
+            throw new RuntimeException("Cấu trúc dữ liệu AI không tương thích để tự động kích hoạt.");
         }
     }
 
-    public List<AiWorkoutPlan> getMemberHistory(Long memberId) {
-        Member member = memberRepository.findById(memberId)
+    /**
+     * Lấy danh sách phác đồ AI đã từng tư vấn cho hội viên
+     */
+    public List<AiWorkoutPlan> getMemberHistory(String username) {
+        Member member = memberRepository.findByUserUsername(username)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy hội viên"));
         return aiPlanRepository.findByMemberOrderByCreatedAtDesc(member);
     }
 
-    // --- HELPER METHODS ---
+    // --- CÁC HÀM HỖ TRỢ (HELPERS) ---
 
     private String extractJson(String text) {
         String clean = text.trim();
@@ -187,22 +206,22 @@ public class AiService {
         payload.put("contents", List.of(content));
 
         Map<String, Object> config = new HashMap<>();
-        config.put("temperature", 0.3); // Giữ sự sáng tạo ở mức an toàn
+        config.put("temperature", 0.3); // Giữ độ chính xác cao cho lịch tập gym
         payload.put("generationConfig", config);
         return payload;
     }
 
     private String buildPrompt(Member member, HealthMetric metric, AiWorkoutRequest req) {
         return String.format(
-                "Bạn là Chuyên gia thể hình chuẩn NASM. Hãy tạo lộ trình cho: %s. " +
-                        "Thông số: Nặng %.1fkg, Cao %.1fcm, BMI %.1f. Mục tiêu: %s. " +
-                        "Chấn thương: %s. Trình độ: %s. Thiết bị: %s. " +
-                        "YÊU CẦU: Trả về DUY NHẤT 1 chuỗi JSON thuần túy (không giải thích), cấu trúc y hệt: " +
+                "Bạn là Chuyên gia thể hình cấp cao chuẩn NASM. Hãy thiết kế lộ trình tập luyện cá nhân hóa cho hội viên: %s. " +
+                        "Thông số hiện tại: Cân nặng %.1fkg, Chiều cao %.1fcm, BMI %.1f. Mục tiêu: %s. " +
+                        "Tình trạng chấn thương: %s. Trình độ kinh nghiệm: %s. Thiết bị sẵn có: %s. " +
+                        "YÊU CẦU QUAN TRỌNG: Chỉ trả về duy nhất 1 chuỗi JSON thuần túy (không giải thích), cấu trúc chính xác như sau: " +
                         "{\"disclaimer\": \"...\", \"advice\": \"...\", \"nutritionPlan\": {\"targetCalories\": 2000}, " +
                         "\"workoutSchedule\": [{\"day\": \"Thứ...\", \"focus\": \"...\", \"exercises\": [{\"name\": \"...\", \"sets\": 3, \"reps\": \"12\", \"notes\": \"...\"}]}]}",
                 member.getFullName(), metric.getWeight(), metric.getHeight(), metric.getBmi(),
-                req.getGoal(), (req.getInjuries() != null ? req.getInjuries() : "Không"),
-                req.getFitnessLevel(), (req.getEquipment() != null ? req.getEquipment() : "Full Gym")
+                req.getGoal(), (req.getInjuries() != null && !req.getInjuries().isEmpty() ? req.getInjuries() : "Không có"),
+                req.getFitnessLevel(), (req.getEquipment() != null && !req.getEquipment().isEmpty() ? req.getEquipment() : "Phòng tập Gym đầy đủ")
         );
     }
 }

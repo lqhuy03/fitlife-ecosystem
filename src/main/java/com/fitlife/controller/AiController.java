@@ -8,14 +8,16 @@ import com.fitlife.service.AiService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.List;
 
 /**
  * Controller manage AI-related features (Gemini AI integration)
  * Handles workout plan generation, history storage, and activation of plans.
-*/
+ */
 
 @RestController
 @RequestMapping("/ai")
@@ -29,10 +31,15 @@ public class AiController {
      * Function: Call AI to analyze health metrics and goals to create a workout plan.
      * The result is automatically saved in the ai_workout_plans table as JSON.
      */
-
     @PostMapping("/workout-plan")
-    public ResponseEntity<ApiResponse<JsonNode>> generatePlan(@Valid @RequestBody AiWorkoutRequest request) {
-        JsonNode aiPlan = aiService.generateWorkoutPlan(request);
+    @PreAuthorize("hasAnyAuthority('MEMBER', 'ROLE_MEMBER')")
+    public ResponseEntity<ApiResponse<JsonNode>> generatePlan(
+            @Valid @RequestBody AiWorkoutRequest request,
+            Principal principal) { // 1. FIX: Thêm Principal vào đây để lấy Token
+
+        // 2. FIX: Truyền username vào Service
+        JsonNode aiPlan = aiService.generateWorkoutPlan(principal.getName(), request);
+
         return ResponseEntity.ok(
                 ApiResponse.<JsonNode>builder()
                         .code(200)
@@ -43,13 +50,17 @@ public class AiController {
     }
 
     /**
-     * Endpoint: GET /api/v1/ai/history/{memberId}
+     * Endpoint: GET /api/v1/ai/history
      * Function: Retrieve the list of past AI-generated workout plans for a member.
      */
+    // 3. FIX: Xóa {memberId} trên URL đi để bảo mật. Chỉ lấy lịch sử của người đang đăng nhập!
+    @GetMapping("/history")
+    @PreAuthorize("hasAnyAuthority('MEMBER', 'ROLE_MEMBER')")
+    public ResponseEntity<ApiResponse<List<AiWorkoutPlan>>> getHistory(Principal principal) {
 
-    @GetMapping("/history/{memberId}")
-    public ResponseEntity<ApiResponse<List<AiWorkoutPlan>>> getHistory(@PathVariable Long memberId) {
-        List<AiWorkoutPlan> history = aiService.getMemberHistory(memberId);
+        // 4. FIX: Truyền username vào Service
+        List<AiWorkoutPlan> history = aiService.getMemberHistory(principal.getName());
+
         return ResponseEntity.ok(
                 ApiResponse.<List<AiWorkoutPlan>>builder()
                         .code(200)
@@ -61,9 +72,10 @@ public class AiController {
 
     /**
      * Endpoint: POST /api/v1/ai/activate/{planId}
-     * Function: Activate a specific AI-generated workout plan by its ID. This will set the chosen plan as the member's current active workout plan, replacing any existing active plan.
+     * Function: Activate a specific AI-generated workout plan by its ID.
      */
     @PostMapping("/activate/{planId}")
+    @PreAuthorize("hasAnyAuthority('MEMBER', 'ROLE_MEMBER')")
     public ResponseEntity<ApiResponse<String>> activatePlan(@PathVariable Long planId) {
         aiService.activatePlan(planId);
         return ResponseEntity.ok(
