@@ -7,6 +7,7 @@ import com.fitlife.entity.Member;
 import com.fitlife.entity.User;
 import com.fitlife.repository.MemberRepository;
 import com.fitlife.repository.UserRepository;
+import com.fitlife.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -21,13 +22,14 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class MemberService {
+public class MemberServiceImpl implements MemberService {
 
     private final MemberRepository memberRepository;
     private final UserRepository userRepository;
     private final CloudinaryServiceImpl cloudinaryServiceImpl;
 
     @Transactional
+    @Override
     public MemberResponse createMember(MemberCreationRequest request) {
         if (memberRepository.existsByPhone(request.getPhone())) {
             // Keep Exception messages in Vietnamese for the End-user
@@ -50,6 +52,7 @@ public class MemberService {
     }
 
     @Transactional
+    @Override
     public String updateAvatar(String username, MultipartFile file) throws IOException {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy User"));
@@ -74,6 +77,7 @@ public class MemberService {
     }
 
     @Transactional(readOnly = true)
+    @Override
     public PageResponse<MemberResponse> getAllMembers(int page, int size, String sortBy, String sortDir, String keyword) {
         // Protect pagination logic: Ensure page is never < 1
         int pageIndex = Math.max(0, page - 1);
@@ -115,5 +119,32 @@ public class MemberService {
                 .status(member.getStatus())
                 .avatarUrl(member.getAvatarUrl())
                 .build();
+    }
+
+    @Transactional
+    @Override
+    public void toggleMemberLock(Long memberId) {
+        // 1. Tìm Member
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy hội viên ID: " + memberId));
+
+        // 2. Lấy User liên kết (Tài khoản để đăng nhập)
+        User user = member.getUser();
+        if (user == null) {
+            throw new RuntimeException("Hội viên chưa có tài khoản đăng nhập");
+        }
+
+        // 3. Đảo trạng thái (Khóa cả Member profile lẫn User login)
+        if ("ACTIVE".equalsIgnoreCase(member.getStatus())) {
+            member.setStatus("BANNED");
+            user.setStatus("BANNED");
+        } else {
+            member.setStatus("ACTIVE");
+            user.setStatus("ACTIVE");
+        }
+
+        // 4. Lưu thay đổi
+        memberRepository.save(member);
+        userRepository.save(user);
     }
 }

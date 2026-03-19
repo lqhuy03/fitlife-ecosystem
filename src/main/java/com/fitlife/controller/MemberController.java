@@ -8,8 +8,7 @@ import com.fitlife.dto.PageResponse; // Thêm thư viện này cho Phân trang
 import com.fitlife.entity.User;
 import com.fitlife.repository.UserRepository;
 import com.fitlife.service.DashboardService;
-import com.fitlife.service.impl.DashboardServiceImpl;
-import com.fitlife.service.impl.MemberService;
+import com.fitlife.service.impl.MemberServiceImpl;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -28,14 +27,14 @@ import java.security.Principal;
 @RequiredArgsConstructor
 public class MemberController {
 
-    private final MemberService memberService;
+    private final MemberServiceImpl memberServiceImpl;
     private final DashboardService dashboardService;
     private final UserRepository userRepository;
 
     // API create member
     @PostMapping
     public ResponseEntity<ApiResponse<MemberResponse>> createMember(@Valid @RequestBody MemberCreationRequest request) {
-        MemberResponse result = memberService.createMember(request);
+        MemberResponse result = memberServiceImpl.createMember(request);
 
         ApiResponse<MemberResponse> response = ApiResponse.<MemberResponse>builder()
                 .code(HttpStatus.CREATED.value())
@@ -52,7 +51,7 @@ public class MemberController {
             @RequestParam("file") MultipartFile file,
             Principal principal) throws IOException {
 
-        String avatarUrl = memberService.updateAvatar(principal.getName(), file);
+        String avatarUrl = memberServiceImpl.updateAvatar(principal.getName(), file);
 
         return ResponseEntity.ok(ApiResponse.<String>builder()
                 .code(200)
@@ -93,7 +92,7 @@ public class MemberController {
             @RequestParam(defaultValue = "DESC") String sortDir,
             @RequestParam(required = false) String keyword
     ) {
-        PageResponse<MemberResponse> result = memberService.getAllMembers(page, size, sortBy, sortDir, keyword);
+        PageResponse<MemberResponse> result = memberServiceImpl.getAllMembers(page, size, sortBy, sortDir, keyword);
 
         return ResponseEntity.ok(ApiResponse.<PageResponse<MemberResponse>>builder()
                 .code(HttpStatus.OK.value())
