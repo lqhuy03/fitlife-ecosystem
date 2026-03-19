@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/admin/packages")
 @RequiredArgsConstructor
 // Bắt buộc phải có Role ADMIN mới được gọi các API này
-@PreAuthorize("hasRole('ADMIN')")
+@PreAuthorize("hasAnyAuthority('ADMIN', 'ROLE_ADMIN')")
 public class AdminGymPackageController {
 
     private final GymPackageService packageService;
