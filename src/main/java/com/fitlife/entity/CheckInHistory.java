@@ -5,8 +5,9 @@ import lombok.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "check_in_history") // ĐẢM BẢO CÓ 2 DẤU GẠCH DƯỚI Ở ĐÂY
-@Data
+@Table(name = "check_in_history")
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -16,11 +17,15 @@ public class CheckInHistory {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_id")
+    @JoinColumn(name = "member_id", nullable = false)
     private Member member;
 
     @Column(name = "check_in_time")
     private LocalDateTime checkInTime;
 
+    @Column(name = " check_out_time")
+    private LocalDateTime checkOutTime;
+
+    @Column(name = "status", nullable = false, length = 20)
     private String status;
 }

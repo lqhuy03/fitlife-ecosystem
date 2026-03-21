@@ -24,7 +24,8 @@ import java.util.Set;
 )
 @Entity
 @Table(name = "workout_plans")
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -49,7 +50,7 @@ public class WorkoutPlan {
     @Enumerated(EnumType.STRING)
     private PlanStatus status; // ACTIVE, COMPLETED, CANCELLED
 
-    @OneToMany(mappedBy = "workoutPlan", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "workoutPlan", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @Builder.Default
     @EqualsAndHashCode.Exclude
     @ToString.Exclude

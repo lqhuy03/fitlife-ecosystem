@@ -9,7 +9,8 @@ import java.util.Set;
 
 @Entity
 @Table(name = "workout_sessions")
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -25,10 +26,10 @@ public class WorkoutSession {
     @JoinColumn(name = "plan_id")
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
-    @JsonIgnore // FIX: Ngắt lặp ngược về Plan
+    @JsonIgnore
     private WorkoutPlan workoutPlan;
 
-    @OneToMany(mappedBy = "session", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "session", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @Builder.Default
     @EqualsAndHashCode.Exclude
     @ToString.Exclude

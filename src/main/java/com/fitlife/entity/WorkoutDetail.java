@@ -6,7 +6,8 @@ import lombok.*;
 
 @Entity
 @Table(name = "workout_details")
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -29,6 +30,6 @@ public class WorkoutDetail {
     @JoinColumn(name = "session_id")
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
-    @JsonIgnore // FIX: Ngắt lặp ngược về Session
+    @JsonIgnore
     private WorkoutSession session;
 }

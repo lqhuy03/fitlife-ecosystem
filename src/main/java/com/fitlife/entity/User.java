@@ -10,10 +10,6 @@ import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
 
-/**
- * Entity represents a system user
- * Implements UserDetails for Spring Security integration
- */
 @Entity
 @Table(name = "users")
 @Getter
@@ -46,9 +42,9 @@ public class User implements UserDetails {
     private LocalDateTime resetTokenExpiry;
 
 
-    @OneToOne(mappedBy = "user")
-    @com.fasterxml.jackson.annotation.JsonIgnore // Rất quan trọng: Ngăn chặn lỗi lặp vô tận (Infinite Recursion) khi trả về JSON
-    @lombok.ToString.Exclude // Ngăn lỗi StackOverflow khi in log
+    @OneToOne(mappedBy = "user", fetch = FetchType.LAZY)
+    @com.fasterxml.jackson.annotation.JsonIgnore
+    @lombok.ToString.Exclude
     private Member member;
 
     // Functions to implement UserDetails interface for Spring Security
