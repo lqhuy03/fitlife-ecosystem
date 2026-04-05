@@ -1,85 +1,81 @@
-# 🏋️‍♂️ FitLife Gym Management API
+<h1 align="center">🏋️‍♂️ FITLIFE - Backend Service (Spring Boot)</h1>
 
-![Java](https://img.shields.io/badge/Java-17-orange?style=for-the-badge&logo=java)
-![Spring Boot](https://img.shields.io/badge/Spring_Boot-3.3.5-brightgreen?style=for-the-badge&logo=spring)
-![MySQL](https://img.shields.io/badge/MySQL-8.0-blue?style=for-the-badge&logo=mysql)
-![Security](https://img.shields.io/badge/Spring_Security-JWT-red?style=for-the-badge)
-![Flyway](https://img.shields.io/badge/Flyway-Migration-ff69b4?style=for-the-badge)
-![Swagger](https://img.shields.io/badge/Swagger-OpenAPI_3-85EA2D?style=for-the-badge&logo=swagger)
+<div align="center">
+  <img src="https://img.shields.io/badge/Java-17-ED8B00?style=for-the-badge&logo=java&logoColor=white" alt="Java 17"/>
+  <img src="https://img.shields.io/badge/Spring_Boot-3.3.x-6DB33F?style=for-the-badge&logo=spring-boot&logoColor=white" alt="Spring Boot"/>
+  <img src="https://img.shields.io/badge/MySQL-8.0-4479A1?style=for-the-badge&logo=mysql&logoColor=white" alt="MySQL"/>
+  <img src="https://img.shields.io/badge/Redis-DC382D?style=for-the-badge&logo=redis&logoColor=white" alt="Redis"/>
+  <img src="https://img.shields.io/badge/Google_Gemini_AI-4285F4?style=for-the-badge&logo=google&logoColor=white" alt="Gemini AI"/>
+</div>
 
-## 📖 About The Project
-**FitLife API** is a robust, scalable, and secure RESTful backend system designed for gym and fitness center management. Built with **Spring Boot 3** and **Java 17**, it provides a complete ecosystem for managing memberships, fitness packages, subscriptions, and daily check-ins.
+<p align="center">
+  <strong>Comprehensive Digital Transformation Solution for Modern Fitness Centers</strong><br>
+  👉 <em>Looking for the Client-side? Visit the <a href="https://github.com/lqhuy03/fitlife-frontend">FitLife Frontend Repository</a>.</em>
+</p>
 
-The project strictly follows **Clean Code** principles, **Defensive Programming**, and modern backend architectural patterns.
+## 📑 Table of Contents
+- [Executive Summary](#-executive-summary)
+- [System Architecture](#-system-architecture)
+- [Killer Features](#-killer-features)
+- [Database Schema (ERD)](#-database-schema-erd)
+- [Getting Started](#-getting-started)
+- [API Documentation](#-api-documentation)
+- [Contact & License](#-contact--license)
 
-## ✨ Core Features
-* **🔒 Advanced Security:** Stateless authentication using **JWT (JSON Web Tokens)**. Passwords are securely hashed using **BCrypt**.
-* **👥 Role-Based Access Control (RBAC):** API endpoint protection based on user roles (`ADMIN`, `STAFF`).
-* **🗄️ Database Versioning:** Automated database schema tracking and migration using **Flyway**.
-* **📝 Interactive Documentation:** Auto-generated API documentation and testing UI using **Swagger (OpenAPI 3)**.
-* **🌐 CORS Enabled:** Ready to be integrated with modern frontend frameworks (React.js, Vue.js, Angular).
+## 📖 Executive Summary
+This is the core RESTful API service for the **FitLife Smart Gym Ecosystem**. It handles complex business logic including membership subscriptions, VNPay cashless transactions, IoT Smart Locker assignments, and Generative AI workout generation.
 
-## 🏗️ Database Schema (Core Modules)
-The system operates on a normalized MySQL relational database consisting of 5 core entities:
-1. `users`: System accounts (Admin, Staff) with credentials and roles.
-2. `members`: Gym customer profiles and contact information.
-3. `packages`: Available fitness plans (e.g., 1-month yoga, 1-year VIP).
-4. `subscriptions`: Transaction records mapping members to purchased packages with valid date ranges.
-5. `check_in_history`: Daily turnstile logs validating active subscriptions upon entry.
+## 🏛 System Architecture
+*(📸 Insert your System Architecture Diagram image here)*
+
+## ✨ Killer Features
+- **Security & IAM:** JWT authentication, RBAC, Google OAuth2.0, and Email OTP recovery.
+- **Generative AI Engine:** Integration with Google Gemini 2.5 API for personalized NASM-standard workout routines.
+- **Payment Gateway:** VNPay Sandbox integration with 2-layer Hash Checksum verification.
+- **High-Performance IoT Logic:** Redis caching for ultra-fast (<100ms) QR check-ins and Smart Locker allocation.
+- **Automated CRM:** Spring `@Scheduled` CronJobs for sending subscription expiry reminders.
+
+## 🗄️ Database Schema (ERD)
+Strictly version-controlled using **Flyway**, comprising 18 normalized tables:
+*(📸 Insert your Entity Relationship Diagram image here)*
 
 ## 🚀 Getting Started
 
 ### Prerequisites
-* **JDK 17** or higher
-* **Maven** 3.8+
-* **MySQL** 8.0+
+- JDK 17+ | Maven 3.8+ | MySQL 8.0+ | Redis Server (Port `6379`)
 
 ### Installation & Setup
 1. **Clone the repository:**
    ```bash
-   git clone [https://github.com/](https://github.com/)lqhuy03/fitlife-gym-management.git
-   cd fitlife-gym-management
+   git clone [https://github.com/](https://github.com/)[your-username]/fitlife-backend.git
+   cd fitlife-backend
+    ```
    
-
-2. **Prepare the repository:**
-
-   Open your MySQL console or GUI tool (DataGrip/Workbench) and create an empty database:
-   ```sql
-   CREATE DATABASE fitlife_db;
+2. **Configure Environment Variables (`application.yml`):**
+   ```YAML
+   spring.datasource.url: jdbc:mysql://localhost:3306/fitlife_db
+   spring.datasource.username: root
+   spring.datasource.password: your_password
+   jwt.secret: YOUR_JWT_SECRET
+   gemini.api-key: YOUR_GEMINI_KEY
+   vnpay.tmn-code: YOUR_VNPAY_CODE
+   vnpay.hash-secret: YOUR_VNPAY_SECRET
    ```
-   *(Note: You don't need to run any schema scripts manually. Flyway will automatically create all tables upon startup).*
-
-
-3. **Configure Application Properties:**
-
-    Navigate to `src/main/resources/application.yml` and update your MySQL credentials:
-    ```yaml
-    spring:
-      datasource:
-        url: jdbc:mysql://localhost:3306/fitlife_db?useSSL=false
-        username: root
-        password: your_secure_password
-    ```
-
-
-4. **Run the Application:**
    
-    Execute the Spring Boot application using your IDE, or via Maven:
+3. **Run the Application:**
 
-    ```bash
-    mvn spring-boot:run
-    ```
-   
-## 📚 API Documentation (Swagger UI)
-Once the server is running (default port 8080), you can access the interactive API documentation to explore and test all endpoints.
+```Bash
+mvn spring-boot:run
+```
+## 📚 API Documentation
+Interactive API documentation is generated via Swagger/OpenAPI 3.0.
+Explore endpoints at: 👉 `http://localhost:8080/swagger-ui.html`
 
-👉 **Swagger UI URL:** http://localhost:8080/swagger-ui/index.html
+## 📞 Contact & License
+**Author:** Le Quang Huy
 
-**How to test secure APIs:**
-1. Register or manually insert a User into the database with `role = STAFF` or `ADMIN`.
-2. Send a `POST` request to `/auth/login` with your credentials. 
-3. Copy the returned `token`.
-4. Click the `Authorize` button (padlock icon) at the top of the Swagger UI and paste your token. All subsequent requests will now be authenticated!
+**Email:** quanghuy.le.dev@gmail.com
 
----
-Developed by Le Quang Huy - 2026
+**LinkedIn:** [linkedin.com/in/huy-le-java](https://www.linkedin.com/in/huy-le-java/)
+
+License: Distributed under the MIT License.
