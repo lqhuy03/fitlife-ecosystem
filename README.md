@@ -26,7 +26,7 @@
 This is the core RESTful API service for the **FitLife Smart Gym Ecosystem**. It handles complex business logic including membership subscriptions, VNPay cashless transactions, IoT Smart Locker assignments, and Generative AI workout generation.
 
 ## 🏛 System Architecture
-*(📸 Insert your System Architecture Diagram image here)*
+![FitLife System Architecture](docs/images/system_architecture.png)
 
 ## ✨ Killer Features
 - **Security & IAM:** JWT authentication, RBAC, Google OAuth2.0, and Email OTP recovery.
@@ -37,7 +37,7 @@ This is the core RESTful API service for the **FitLife Smart Gym Ecosystem**. It
 
 ## 🗄️ Database Schema (ERD)
 Strictly version-controlled using **Flyway**, comprising 18 normalized tables:
-*(📸 Insert your Entity Relationship Diagram image here)*
+![FitLife Database ERD](docs/images/erd_final.png)
 
 ## 🚀 Getting Started
 
