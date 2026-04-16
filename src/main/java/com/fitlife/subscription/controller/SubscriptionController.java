@@ -1,6 +1,9 @@
-package com.fitlife.subscription;
+package com.fitlife.subscription.controller;
 
 import com.fitlife.core.response.ApiResponse;
+import com.fitlife.subscription.dto.SubscriptionCreationRequest;
+import com.fitlife.subscription.dto.SubscriptionResponse;
+import com.fitlife.subscription.service.SubscriptionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

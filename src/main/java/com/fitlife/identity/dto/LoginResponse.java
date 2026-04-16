@@ -1,4 +1,4 @@
-package com.fitlife.identity;
+package com.fitlife.identity.dto;
 
 import lombok.*;
 

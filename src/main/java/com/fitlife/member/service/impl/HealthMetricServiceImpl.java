@@ -1,8 +1,11 @@
-package com.fitlife.member;
+package com.fitlife.member.service.impl;
 
 import com.fitlife.member.dto.HealthMetricRequest;
 import com.fitlife.member.entity.HealthMetric;
 import com.fitlife.member.entity.Member;
+import com.fitlife.member.repository.HealthMetricRepository;
+import com.fitlife.member.repository.MemberRepository;
+import com.fitlife.member.service.HealthMetricService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,7 +20,7 @@ public class HealthMetricServiceImpl implements HealthMetricService {
     private final HealthMetricRepository healthMetricRepository;
     private final MemberRepository memberRepository;
 
-    @Transactional // Rất quan trọng vì ta sẽ update cả 2 bảng (Member và HealthMetric)
+    @Transactional
     @Override
     public HealthMetric addHealthMetric(String username, HealthMetricRequest request) {
         Member member = memberRepository.findByUserUsername(username)

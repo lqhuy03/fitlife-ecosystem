@@ -14,7 +14,7 @@ public class RestTemplateConfig {
     public RestTemplate restTemplate() {
         SimpleClientHttpRequestFactory factory = new SimpleClientHttpRequestFactory();
         factory.setConnectTimeout(60000);
-        factory.setReadTimeout(60000); // Đợi AI trả lời trong 60s
+        factory.setReadTimeout(60000);
         return new RestTemplate(factory);
     }
 }

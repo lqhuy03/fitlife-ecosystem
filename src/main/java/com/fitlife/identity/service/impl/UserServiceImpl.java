@@ -1,6 +1,6 @@
-package com.fitlife.identity;
+package com.fitlife.identity.service.impl;
 
-import com.fitlife.identity.controller.UserCreationRequest;
+import com.fitlife.identity.dto.UserCreationRequest;
 import com.fitlife.identity.dto.UserResponse;
 import com.fitlife.identity.entity.User;
 import com.fitlife.identity.repository.UserRepository;

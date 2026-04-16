@@ -1,10 +1,11 @@
-package com.fitlife.identity.service;
+package com.fitlife.identity.service.impl;
 
 import com.fitlife.identity.dto.*;
 import com.fitlife.identity.repository.UserRepository;
+import com.fitlife.identity.service.AuthService;
 import com.fitlife.member.entity.Member;
 import com.fitlife.identity.entity.User;
-import com.fitlife.member.MemberRepository;
+import com.fitlife.member.repository.MemberRepository;
 import com.fitlife.core.mail.EmailService;
 import com.fitlife.core.security.JwtServiceImpl;
 import lombok.RequiredArgsConstructor;

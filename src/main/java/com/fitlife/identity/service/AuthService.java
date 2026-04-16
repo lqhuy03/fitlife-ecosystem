@@ -1,4 +1,6 @@
-package com.fitlife.identity;
+package com.fitlife.identity.service;
+
+import com.fitlife.identity.dto.*;
 
 public interface AuthService {
 

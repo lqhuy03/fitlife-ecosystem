@@ -1,4 +1,4 @@
-package com.fitlife.analytics;
+package com.fitlife.analytics.service;
 
 import java.util.Map;
 

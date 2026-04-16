@@ -1,8 +1,11 @@
-package com.fitlife.packagegym;
+package com.fitlife.packagegym.service.impl;
 
 import com.fitlife.core.response.PageResponse;
 import com.fitlife.packagegym.dto.GymPackageRequest;
 import com.fitlife.packagegym.dto.GymPackageResponse;
+import com.fitlife.packagegym.entity.GymPackage;
+import com.fitlife.packagegym.repository.GymPackageRepository;
+import com.fitlife.packagegym.service.GymPackageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;

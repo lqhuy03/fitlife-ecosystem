@@ -1,6 +1,7 @@
-package com.fitlife.attendance;
+package com.fitlife.attendance.controller;
 
 import com.fitlife.attendance.dto.CheckInResponse;
+import com.fitlife.attendance.service.CheckInService;
 import com.fitlife.core.response.ApiResponse;
 import com.fitlife.identity.entity.User;
 import com.fitlife.identity.repository.UserRepository;

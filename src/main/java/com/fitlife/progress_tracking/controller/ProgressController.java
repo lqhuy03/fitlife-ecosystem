@@ -3,7 +3,7 @@ package com.fitlife.progress_tracking.controller;
 import com.fitlife.core.response.ApiResponse;
 import com.fitlife.identity.entity.User;
 import com.fitlife.identity.repository.UserRepository;
-import com.fitlife.progress_tracking.ProgressFacadeService;
+import com.fitlife.progress_tracking.service.ProgressFacadeService;
 import com.fitlife.progress_tracking.dto.MemberProgressSummaryResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

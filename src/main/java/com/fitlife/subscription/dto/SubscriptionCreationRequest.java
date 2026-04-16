@@ -1,4 +1,4 @@
-package com.fitlife.subscription;
+package com.fitlife.subscription.dto;
 
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;

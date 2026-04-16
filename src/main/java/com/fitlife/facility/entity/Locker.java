@@ -13,17 +13,20 @@ public class Locker {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, unique = true)
-    private String lockerNumber; // Số tủ (VD: A-01)
+    @Column(name = "locker_number", nullable = false, unique = true)
+    private String lockerNumber;
 
     @Enumerated(EnumType.STRING)
-    private LockerStatus status; // AVAILABLE, OCCUPIED, MAINTENANCE
+    @Column(nullable = false, length = 20)
+    private LockerStatus status;
 
-    @ManyToOne
-    @JoinColumn(name = "branch_id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    // FIX: Sửa thành gym_branch_id cho chuẩn Convention
+    @JoinColumn(name = "gym_branch_id", nullable = false)
     private GymBranch branch;
-}
 
-enum LockerStatus {
-    AVAILABLE, OCCUPIED, MAINTENANCE
+    // Đưa Enum vào trong Class thành public (hoặc tách file riêng)
+    public enum LockerStatus {
+        AVAILABLE, OCCUPIED, MAINTENANCE
+    }
 }
