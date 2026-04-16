@@ -1,4 +1,4 @@
-package com.fitlife.ai_workout.dto;
+package com.fitlife.ai.dto;
 
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
@@ -19,7 +19,6 @@ public class AiWorkoutRequest {
     @Max(7)
     private int daysPerWeek;
 
-    // Advanced fields (optional null)
     private String injuries;
     private String equipment;
     private String dietPreference;

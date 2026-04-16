@@ -1,4 +1,4 @@
-package com.fitlife.member;
+package com.fitlife.member.service.impl;
 
 import com.fitlife.core.response.PageResponse;
 import com.fitlife.identity.entity.User;
@@ -7,6 +7,8 @@ import com.fitlife.member.dto.MemberProfileResponse;
 import com.fitlife.member.entity.Member;
 import com.fitlife.identity.repository.UserRepository;
 import com.fitlife.core.storage.CloudinaryServiceImpl;
+import com.fitlife.member.repository.MemberRepository;
+import com.fitlife.member.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;

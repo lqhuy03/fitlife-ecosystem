@@ -1,4 +1,4 @@
-package com.fitlife.packagegym;
+package com.fitlife.packagegym.service;
 
 import com.fitlife.core.response.PageResponse;
 import com.fitlife.packagegym.dto.GymPackageRequest;

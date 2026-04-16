@@ -1,8 +1,9 @@
-package com.fitlife.member;
+package com.fitlife.member.controller;
 
 import com.fitlife.core.response.ApiResponse;
 import com.fitlife.member.dto.HealthMetricRequest;
 import com.fitlife.member.entity.HealthMetric;
+import com.fitlife.member.service.HealthMetricService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

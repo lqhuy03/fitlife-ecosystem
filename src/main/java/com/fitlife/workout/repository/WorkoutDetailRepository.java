@@ -1,6 +1,6 @@
-package com.fitlife.ai_workout;
+package com.fitlife.workout.repository;
 
-import com.fitlife.ai_workout.entity.WorkoutDetail;
+import com.fitlife.workout.entity.WorkoutDetail;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

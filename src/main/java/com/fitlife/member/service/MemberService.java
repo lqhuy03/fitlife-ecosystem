@@ -1,4 +1,4 @@
-package com.fitlife.member;
+package com.fitlife.member.service;
 
 import com.fitlife.core.response.PageResponse;
 import com.fitlife.member.dto.MemberCreationRequest;

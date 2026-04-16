@@ -1,4 +1,4 @@
-package com.fitlife.attendance;
+package com.fitlife.attendance.repository;
 
 import com.fitlife.attendance.entity.CheckInHistory;
 import com.fitlife.member.entity.Member;

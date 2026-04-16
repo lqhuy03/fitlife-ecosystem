@@ -1,11 +1,13 @@
-package com.fitlife.attendance;
+package com.fitlife.attendance.service.impl;
 
 import com.fitlife.attendance.dto.CheckInResponse;
 import com.fitlife.attendance.entity.CheckInHistory;
+import com.fitlife.attendance.repository.CheckInHistoryRepository;
+import com.fitlife.attendance.service.CheckInService;
 import com.fitlife.member.entity.Member;
-import com.fitlife.subscription.Subscription;
-import com.fitlife.member.MemberRepository;
-import com.fitlife.subscription.SubscriptionRepository;
+import com.fitlife.subscription.entity.Subscription;
+import com.fitlife.member.repository.MemberRepository;
+import com.fitlife.subscription.reprository.SubscriptionRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

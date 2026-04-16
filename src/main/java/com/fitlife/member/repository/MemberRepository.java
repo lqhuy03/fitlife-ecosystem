@@ -1,4 +1,4 @@
-package com.fitlife.member;
+package com.fitlife.member.repository;
 
 import com.fitlife.member.entity.Member;
 import org.springframework.data.domain.Page;

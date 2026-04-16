@@ -1,4 +1,4 @@
-package com.fitlife.member;
+package com.fitlife.member.service;
 
 import com.fitlife.member.dto.HealthMetricRequest;
 import com.fitlife.member.entity.HealthMetric;

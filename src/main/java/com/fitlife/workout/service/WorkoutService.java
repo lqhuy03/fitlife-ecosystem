@@ -1,6 +1,6 @@
-package com.fitlife.ai_workout;
+package com.fitlife.workout.service;
 
-import com.fitlife.ai_workout.entity.WorkoutPlan;
+import com.fitlife.workout.entity.WorkoutPlan;
 
 public interface WorkoutService {
     WorkoutPlan getCurrentPlanByUsername(String username);

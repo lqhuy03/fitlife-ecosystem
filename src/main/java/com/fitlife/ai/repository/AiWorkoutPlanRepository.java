@@ -1,6 +1,6 @@
-package com.fitlife.ai_workout;
+package com.fitlife.ai.repository;
 
-import com.fitlife.ai_workout.entity.AiWorkoutPlan;
+import com.fitlife.ai.entity.AiWorkoutPlan;
 import com.fitlife.member.entity.Member;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;

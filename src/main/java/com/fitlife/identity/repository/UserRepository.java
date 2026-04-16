@@ -1,4 +1,4 @@
-package com.fitlife.identity;
+package com.fitlife.identity.repository;
 
 import com.fitlife.identity.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;

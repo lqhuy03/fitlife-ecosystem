@@ -1,9 +1,12 @@
-package com.fitlife.ai_workout;
+package com.fitlife.workout.service.impl;
 
-import com.fitlife.ai_workout.entity.WorkoutDetail;
-import com.fitlife.ai_workout.entity.WorkoutPlan;
+import com.fitlife.workout.entity.WorkoutDetail;
+import com.fitlife.workout.entity.WorkoutPlan;
+import com.fitlife.workout.repository.WorkoutDetailRepository;
+import com.fitlife.workout.repository.WorkoutPlanRepository;
+import com.fitlife.workout.service.WorkoutService;
 import com.fitlife.member.entity.Member;
-import com.fitlife.member.MemberRepository;
+import com.fitlife.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

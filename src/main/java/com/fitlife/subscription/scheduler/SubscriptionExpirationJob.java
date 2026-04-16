@@ -1,7 +1,7 @@
 package com.fitlife.subscription.scheduler;
 
-import com.fitlife.subscription.Subscription;
-import com.fitlife.subscription.SubscriptionRepository;
+import com.fitlife.subscription.entity.Subscription;
+import com.fitlife.subscription.reprository.SubscriptionRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;

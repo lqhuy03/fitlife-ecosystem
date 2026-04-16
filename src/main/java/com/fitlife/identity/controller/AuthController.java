@@ -1,7 +1,8 @@
 package com.fitlife.identity.controller;
 
 import com.fitlife.core.response.ApiResponse;
-import com.fitlife.identity.*;
+import com.fitlife.identity.dto.*;
+import com.fitlife.identity.service.AuthService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

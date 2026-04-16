@@ -1,15 +1,16 @@
-package com.fitlife.progress_tracking;
+package com.fitlife.progress_tracking.service.impl;
 
-import com.fitlife.ai_workout.repository.WorkoutDetailRepository;
-import com.fitlife.ai_workout.repository.WorkoutPlanRepository;
+import com.fitlife.workout.repository.WorkoutDetailRepository;
+import com.fitlife.workout.repository.WorkoutPlanRepository;
 import com.fitlife.attendance.repository.CheckInHistoryRepository;
 import com.fitlife.member.repository.MemberRepository;
 import com.fitlife.member.repository.HealthMetricRepository;
 import com.fitlife.member.entity.HealthMetric;
 import com.fitlife.member.entity.Member;
-import com.fitlife.subscription.Subscription;
-import com.fitlife.ai_workout.entity.WorkoutPlan;
-import com.fitlife.subscription.SubscriptionRepository;
+import com.fitlife.progress_tracking.service.ProgressFacadeService;
+import com.fitlife.subscription.entity.Subscription;
+import com.fitlife.workout.entity.WorkoutPlan;
+import com.fitlife.subscription.reprository.SubscriptionRepository;
 import com.fitlife.progress_tracking.dto.MemberProgressSummaryResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

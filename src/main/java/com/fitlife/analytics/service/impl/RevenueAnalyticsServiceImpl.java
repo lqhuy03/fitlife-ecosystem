@@ -1,5 +1,6 @@
-package com.fitlife.analytics;
+package com.fitlife.analytics.service.impl;
 
+import com.fitlife.analytics.service.RevenueAnalyticsService;
 import com.fitlife.payment.repository.PaymentRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

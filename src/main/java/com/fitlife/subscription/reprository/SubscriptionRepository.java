@@ -1,6 +1,7 @@
-package com.fitlife.subscription;
+package com.fitlife.subscription.reprository;
 
 import com.fitlife.member.entity.Member;
+import com.fitlife.subscription.entity.Subscription;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

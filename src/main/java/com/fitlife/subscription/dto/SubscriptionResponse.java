@@ -1,4 +1,4 @@
-package com.fitlife.subscription;
+package com.fitlife.subscription.dto;
 
 import lombok.Builder;
 import lombok.Getter;

@@ -1,10 +1,11 @@
-package com.fitlife.member;
+package com.fitlife.member.controller;
 
 import com.fitlife.core.response.ApiResponse;
 import com.fitlife.core.response.PageResponse;
 import com.fitlife.member.dto.MemberCreationRequest;
 import com.fitlife.member.dto.MemberProfileResponse;
 import com.fitlife.identity.repository.UserRepository; // Lưu ý: Tương lai nên chuyển việc gọi DB này xuống tầng Service
+import com.fitlife.member.service.MemberService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

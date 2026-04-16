@@ -1,4 +1,4 @@
-package com.fitlife.ai_workout.dto;
+package com.fitlife.ai.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -28,7 +28,6 @@ public class AiWorkoutResponse {
         private String dayName; // VD: "Day 1: Push", "Monday"
         private String focusArea; // VD: "Chest, Shoulders, Triceps"
 
-        // Danh sách các bài tập trong buổi đó
         private List<Exercise> exercises;
     }
 
@@ -38,8 +37,8 @@ public class AiWorkoutResponse {
     public static class Exercise {
         private String exerciseName;
         private int sets;
-        private String reps; // Dùng String vì có thể là "8-12" hoặc "To failure"
-        private int restSeconds; // Thời gian nghỉ giữa hiệp
-        private String notes; // Lời khuyên của AI (VD: "Gồng chặt cơ core")
+        private String reps;
+        private int restSeconds;
+        private String notes;
     }
 }

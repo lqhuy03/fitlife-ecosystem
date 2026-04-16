@@ -1,6 +1,6 @@
-package com.fitlife.identity;
+package com.fitlife.identity.service;
 
-import com.fitlife.identity.controller.UserCreationRequest;
+import com.fitlife.identity.dto.UserCreationRequest;
 import com.fitlife.identity.dto.UserResponse;
 
 public interface UserService {
