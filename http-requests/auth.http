@@ -1,0 +1,43 @@
+### ==========================================
+### ĐĂNG NHẬP (LOGIN) VÀ LƯU TOKEN TỰ ĐỘNG
+### ==========================================
+POST {{host}}/auth/login
+Content-Type: application/json
+
+{
+  "username": "admin",
+  "password": "password123"
+}
+
+> {%
+    // Kịch bản (Script) chạy ngay sau khi có Response trả về
+    if (response.status === 200) {
+        // Tùy thuộc vào DTO LoginResponse của em.
+        // Nếu trả về thẳng { "token": "..." } thì dùng response.body.token
+        // Nếu bọc trong data { "data": { "token": "..." } } thì dùng response.body.data.token
+        let token = response.body.token || response.body.data?.token || response.body.accessToken;
+
+        if(token) {
+            client.global.set("jwt_token", token);
+            client.log("✅ Đã lưu JWT Token thành công: " + token);
+        } else {
+            client.log("⚠️ Không tìm thấy token trong response body!");
+        }
+    } else {
+        client.log("❌ Đăng nhập thất bại. Status: " + response.status);
+    }
+%}
+
+### ==========================================
+### ĐĂNG KÝ (REGISTER) - DÙNG ĐỂ TẠO ADMIN MỚI NẾU CẦN
+### ==========================================
+POST {{host}}/auth/register
+Content-Type: application/json
+
+{
+  "username": "superadmin",
+  "password": "password123",
+  "email": "admin@fitlife.com",
+  "fullName": "Super Admin",
+  "phone": "0988888888"
+}

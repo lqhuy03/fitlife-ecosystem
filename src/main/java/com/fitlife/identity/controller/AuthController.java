@@ -25,13 +25,7 @@ public class AuthController {
     public ResponseEntity<ApiResponse<LoginResponse>> login(@Valid @RequestBody LoginRequest request) {
         LoginResponse result = authService.login(request);
 
-        return ResponseEntity.ok(
-                ApiResponse.<LoginResponse>builder()
-                        .code(200)
-                        .message("Đăng nhập thành công")
-                        .data(result)
-                        .build()
-        );
+        return ResponseEntity.ok(ApiResponse.success(result, "Đăng nhập thành công"));
     }
 
     @PostMapping("/register")
