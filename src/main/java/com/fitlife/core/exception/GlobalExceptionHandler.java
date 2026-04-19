@@ -1,6 +1,7 @@
 package com.fitlife.core.exception;
 
 import com.fitlife.core.response.ApiResponse;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import java.util.HashMap;
 import java.util.Map;
 
+@Slf4j // Tự động inject Logger
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
@@ -21,52 +23,41 @@ public class GlobalExceptionHandler {
         Map<String, String> errors = new HashMap<>();
 
         ex.getBindingResult().getAllErrors().forEach((error) -> {
-            // Check safe after press style avoid ClassCastException
             String fieldName = (error instanceof FieldError) ? ((FieldError) error).getField() : error.getObjectName();
             String errorMessage = error.getDefaultMessage();
             errors.put(fieldName, errorMessage);
         });
 
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
-                ApiResponse.<Map<String, String>>builder()
-                        .code(400)
-                        .message("Dữ liệu đầu vào không hợp lệ")
-                        .data(errors)
-                        .build()
-        );
+        // CLEAN CODE: Truyền danh sách lỗi vào hàm error()
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(ApiResponse.error(400, "Dữ liệu đầu vào không hợp lệ", errors));
     }
 
     // 2. CATCHING AUTHENTICATION ERROR
     @ExceptionHandler(BadCredentialsException.class)
     public ResponseEntity<ApiResponse<String>> handleBadCredentialsException(BadCredentialsException ex) {
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
-                ApiResponse.<String>builder()
-                        .code(401)
-                        .message("Tài khoản hoặc mật khẩu không chính xác!")
-                        .build()
-        );
+        // CLEAN CODE
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(ApiResponse.error(401, "Tài khoản hoặc mật khẩu không chính xác!"));
     }
 
     // 3. CATCHING CUSTOM BUSINESS EXCEPTION
     @ExceptionHandler(AppException.class)
     public ResponseEntity<ApiResponse<String>> handleAppException(AppException ex) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
-                ApiResponse.<String>builder()
-                        .code(400) // Hoặc lấy mã code từ chính AppException nếu bạn thiết kế linh hoạt hơn
-                        .message(ex.getMessage())
-                        .build()
-        );
+        ErrorCode errorCode = ex.getErrorCode(); // Lấy ErrorCode từ Exception
+
+        // Lấy đúng mã code từ Enum (ví dụ: 404, 400, 401) động theo cấu hình
+        return ResponseEntity.status(errorCode.getCode())
+                .body(ApiResponse.error(errorCode.getCode(), errorCode.getMessage()));
     }
 
     // 4. CATCH-ALL: Caught any unwanted system errors (NPE, DB Error...)
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiResponse<String>> handleGlobalException(Exception ex) {
-        // Gợi ý: Ghi log lỗi tại đây (log.error("Lỗi hệ thống: ", ex))
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
-                ApiResponse.<String>builder()
-                        .code(500)
-                        .message("Đã có lỗi hệ thống xảy ra. Vui lòng thử lại sau!")
-                        .build()
-        );
+        // Ghi log lỗi vào file/console để Dev check, không trả chi tiết cho Client tránh lộ bảo mật
+        log.error("Lỗi hệ thống nghiêm trọng: ", ex);
+
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(ApiResponse.error(500, "Đã có lỗi hệ thống xảy ra. Vui lòng thử lại sau!"));
     }
 }

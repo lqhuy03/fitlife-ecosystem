@@ -1,6 +1,10 @@
+<<<<<<<< HEAD:src/main/java/com/fitlife/workout/repository/WorkoutDetailRepository.java
+package com.fitlife.workout.repository;
+========
 package com.fitlife.ai_workout.repository;
+>>>>>>>> origin/main:src/main/java/com/fitlife/ai_workout/repository/WorkoutDetailRepository.java
 
-import com.fitlife.ai_workout.entity.WorkoutDetail;
+import com.fitlife.workout.entity.WorkoutDetail;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

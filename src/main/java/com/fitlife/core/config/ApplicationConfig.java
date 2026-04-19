@@ -1,6 +1,6 @@
 package com.fitlife.core.config;
 
-import com.fitlife.identity.UserRepository;
+import com.fitlife.identity.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

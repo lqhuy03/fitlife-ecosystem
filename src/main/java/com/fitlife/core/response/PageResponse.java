@@ -12,9 +12,9 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class PageResponse<T> {
-    private int currentPage;    // Trang hiện tại
-    private int totalPages;     // Tổng số trang
-    private int pageSize;       // Số phần tử trên 1 trang
-    private long totalElements; // Tổng số bản ghi trong DB
-    private List<T> data;       // Danh sách dữ liệu thực tế
+    private int currentPage;
+    private int totalPages;
+    private int pageSize;
+    private long totalElements;
+    private List<T> data;
 }
