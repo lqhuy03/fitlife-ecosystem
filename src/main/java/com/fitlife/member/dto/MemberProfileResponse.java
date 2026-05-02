@@ -24,4 +24,12 @@ public class MemberProfileResponse {
     private String status;
     @Schema(description = "Đường dẫn avatar", example = "https://cdn.fitlife.local/avatar/100.jpg")
     private String avatarUrl;
+    @Schema(description = "Chiều cao (cm)", example = "175")
+    private Double height;
+    @Schema(description = "Cân nặng (kg)", example = "70")
+    private Double weight;
+    @Schema(description = "Chỉ số BMI", example = "22.86")
+    private Double bmi;
+    @Schema(description = "Mục tiêu fitness", example = "Giảm cân")
+    private String fitnessGoal;
 }

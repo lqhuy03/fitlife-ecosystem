@@ -57,3 +57,15 @@ mvn spring-boot:run
 ## 📖 API Documentation(Open API 3.0)
 The API contract is auto-generated and interactive. Once the server is running, visit:
 - Local: `http://localhost:8080/swagger-ui.html`
+
+## 🧭 Developer Documentation
+
+Developer and testing documentation have been organized under `docs/` and helper scripts under `scripts/`:
+
+- `docs/CHANGELOG.md` — Release notes and changelog
+- `docs/FINAL_AUDIT_REPORT.md` — Project audit summary
+- `docs/QUICK_REFERENCE.md` — Quick start and common commands
+- `docs/TEST_GUIDE.md` — Detailed testing guide
+- `scripts/test_member_profile.sh` — Automated profile/BMI test wrapper
+
+Refer to these when onboarding or running the test suite.

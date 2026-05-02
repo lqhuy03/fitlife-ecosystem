@@ -16,7 +16,7 @@ Content-Type: application/json
 
 {
   "username": "test_member",
-  "password": "password123"
+  "password": "new_password_456"
 }
 
 > {%

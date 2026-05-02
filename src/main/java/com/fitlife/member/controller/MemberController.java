@@ -4,6 +4,7 @@ import com.fitlife.core.response.ApiResponse;
 import com.fitlife.core.response.PageResponse;
 import com.fitlife.member.dto.MemberCreationRequest;
 import com.fitlife.member.dto.MemberProfileResponse;
+import com.fitlife.member.dto.MemberUpdateRequest;
 import com.fitlife.member.service.MemberService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -104,5 +105,22 @@ public class MemberController {
     public ResponseEntity<ApiResponse<String>> deleteMember(@PathVariable Long id) {
         memberService.deleteMember(id);
         return ResponseEntity.ok(ApiResponse.success(null, "Đã xóa hội viên khỏi hệ thống"));
+    }
+
+    @GetMapping("/me")
+    @Operation(summary = "Lấy hồ sơ cá nhân", description = "Lấy thông tin profile dựa trên Token đang đăng nhập (Bảo mật IDOR)")
+    public ResponseEntity<ApiResponse<MemberProfileResponse>> getMyProfile(Principal principal) {
+        // principal.getName() sẽ tự động móc cái username ra từ JWT Token
+        MemberProfileResponse result = memberService.getMyProfile(principal.getName());
+        return ResponseEntity.ok(ApiResponse.success(result, "Lấy hồ sơ cá nhân thành công"));
+    }
+
+    @PutMapping("/me")
+    @Operation(summary = "Cập nhật hồ sơ & Chỉ số BMI", description = "Cập nhật thông tin cá nhân và hệ thống tự tính lại BMI")
+    public ResponseEntity<ApiResponse<MemberProfileResponse>> updateMyProfile(
+            @Valid @RequestBody MemberUpdateRequest request,
+            Principal principal) {
+        MemberProfileResponse result = memberService.updateMyProfile(principal.getName(), request);
+        return ResponseEntity.ok(ApiResponse.success(result, "Cập nhật hồ sơ thành công"));
     }
 }

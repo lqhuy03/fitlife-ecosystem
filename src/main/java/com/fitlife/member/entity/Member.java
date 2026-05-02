@@ -5,6 +5,7 @@ import com.fitlife.identity.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -18,6 +19,7 @@ import java.util.List;
 @Builder
 public class Member implements Serializable {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     @Id
@@ -44,8 +46,17 @@ public class Member implements Serializable {
     @Column(name = "avatar_url")
     private String avatarUrl;
 
+    @Column(name = "height")
     private Double height;
+    
+    @Column(name = "weight")
     private Double weight;
+    
+    @Column(name = "bmi")
+    private Double bmi;
+
+    @Column(name = "fitness_goal")
+    private String fitnessGoal;
 
     @Column(name = "is_deleted")
     @Builder.Default
@@ -58,7 +69,7 @@ public class Member implements Serializable {
     private LocalDateTime updatedAt;
 
     @OneToMany(mappedBy = "member", fetch = FetchType.LAZY)
-    private List<Subscription> subscriptions;
+    private transient List<Subscription> subscriptions;
 
     @PrePersist
     protected void onCreate() {

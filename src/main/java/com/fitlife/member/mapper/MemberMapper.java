@@ -12,6 +12,9 @@ public interface MemberMapper {
     @Mapping(source = "user.id", target = "userId")
     MemberProfileResponse toResponse(Member member);
 
+    @Mapping(source = "user.id", target = "userId")
+    MemberProfileResponse toProfileResponse(Member member);
+
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "user", ignore = true)
     @Mapping(target = "status", ignore = true)
