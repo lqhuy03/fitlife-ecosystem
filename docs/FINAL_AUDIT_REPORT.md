@@ -1,14 +1,6 @@
-# 📋 **FINAL PROJECT AUDIT REPORT**
+# Deprecated copy
 
-(This file is a copy of the audit report for repo organization.)
+This is a legacy duplicate kept only for archive/reference.
 
----
-
-## ✅ **OVERVIEW**
-
-**Project**: FitLife - Gym Management System
-**Status**: ✅ **READY FOR CONTINUED DEVELOPMENT**
-**Date**: May 2, 2026
-
-(Full report retained in repo root for convenience; this copy is placed in `docs/`.)
+Canonical audit report: `../FINAL_AUDIT_REPORT.md`
 

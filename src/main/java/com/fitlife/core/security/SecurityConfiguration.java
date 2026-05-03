@@ -42,17 +42,24 @@ public class SecurityConfiguration {
                         .requestMatchers(HttpMethod.GET, "/packages/**", "/api/v1/packages/**").permitAll()
                         .requestMatchers("/payment/vnpay-return", "/api/v1/payment/vnpay-return", "/payment/vnpay-ipn", "/api/v1/payment/vnpay-ipn").permitAll()
 
-                        // 2. BUSINESS & HEALTH (Chỉ cần ROLE_ prefix là đủ)
-                        .requestMatchers("/workout/**", "/api/v1/workout/**").hasAnyAuthority("ROLE_MEMBER", "ROLE_STAFF", "ROLE_ADMIN")
-                        .requestMatchers("/health/**", "/api/v1/health/**").hasAnyAuthority("ROLE_MEMBER", "ROLE_STAFF", "ROLE_ADMIN")
-                        .requestMatchers("/members/**", "/api/v1/members/**").hasAnyAuthority("ROLE_MEMBER", "ROLE_STAFF", "ROLE_ADMIN")
-                        .requestMatchers("/payment/**", "/api/v1/payment/**").hasAnyAuthority("ROLE_MEMBER")
+                        // 2. BUSINESS & HEALTH (Chấp nhận cả có ROLE_ và không có ROLE_)
+                        .requestMatchers("/workout/**", "/api/v1/workout/**").hasAnyAuthority("MEMBER", "ROLE_MEMBER", "STAFF", "ROLE_STAFF", "ADMIN", "ROLE_ADMIN")
+                        .requestMatchers("/health/**", "/api/v1/health/**").hasAnyAuthority("MEMBER", "ROLE_MEMBER", "STAFF", "ROLE_STAFF", "ADMIN", "ROLE_ADMIN")
+
+                        // Riêng /members/me thì ai đăng nhập vào cũng xem được hồ sơ của mình
+                        .requestMatchers(HttpMethod.GET, "/members/me", "/api/v1/members/me").authenticated()
+                        .requestMatchers(HttpMethod.PUT, "/members/me", "/api/v1/members/me").authenticated()
+
+                        // Các API members khác (như /members/admin) thì vẫn siết quyền
+                        .requestMatchers("/members/**", "/api/v1/members/**").hasAnyAuthority("MEMBER", "ROLE_MEMBER", "STAFF", "ROLE_STAFF", "ADMIN", "ROLE_ADMIN")
+
+                        .requestMatchers("/payment/**", "/api/v1/payment/**").hasAnyAuthority("MEMBER", "ROLE_MEMBER")
 
                         // 3. ADMINISTRATION
-                        .requestMatchers(HttpMethod.POST, "/packages/**", "/api/v1/packages/**").hasAnyAuthority("ROLE_ADMIN", "ROLE_STAFF")
+                        .requestMatchers(HttpMethod.POST, "/packages/**", "/api/v1/packages/**").hasAnyAuthority("ADMIN", "ROLE_ADMIN", "STAFF", "ROLE_STAFF")
 
                         // 4. CHECK-IN ROUTE
-                        .requestMatchers("/checkin/**", "/api/v1/checkin/**").hasAnyAuthority("ROLE_ADMIN", "ROLE_STAFF", "ROLE_MEMBER")
+                        .requestMatchers("/checkin/**", "/api/v1/checkin/**").hasAnyAuthority("ADMIN", "ROLE_ADMIN", "STAFF", "ROLE_STAFF", "MEMBER", "ROLE_MEMBER")
 
                         .anyRequest().authenticated()
                 )

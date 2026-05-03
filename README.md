@@ -20,7 +20,7 @@ As a foundational step towards scalable enterprise systems, this backend strictl
 - **Database Optimization:** Eliminated Hibernate **N+1 Query** anomalies by strategically applying `FetchType.LAZY` and custom `@Query` with JOIN FETCH. Implemented global Soft Delete (`is_deleted = true`).
 
 ## 🗄️ Database Schema (ERD)
-![ERD Diagram](./docs/erd_diagram.png)
+![ERD Diagram](docs/erd_diagram.png)
 
 ## 🧪 Testing & Quality Assurance
 - **Unit Testing:** Comprehensive test coverage for critical business logic (e.g., VNPay Checksum Validation, JWT Parsing) using **JUnit 5**.
@@ -60,12 +60,14 @@ The API contract is auto-generated and interactive. Once the server is running, 
 
 ## 🧭 Developer Documentation
 
-Developer and testing documentation have been organized under `docs/` and helper scripts under `scripts/`:
+Developer and testing documentation are organized as follows:
 
-- `docs/CHANGELOG.md` — Release notes and changelog
-- `docs/FINAL_AUDIT_REPORT.md` — Project audit summary
-- `docs/QUICK_REFERENCE.md` — Quick start and common commands
-- `docs/TEST_GUIDE.md` — Detailed testing guide
+- `CHANGELOG.md` — Release notes and changelog
+- `FINAL_AUDIT_REPORT.md` — Project audit summary
+- `QUICK_REFERENCE.md` — Quick start and common commands
+- `TEST_GUIDE.md` — Detailed testing guide
+- `docs/ROADMAP.md` — Zero-to-Hero roadmap
+- `docs/erd_diagram.png` — ERD reference
 - `scripts/test_member_profile.sh` — Automated profile/BMI test wrapper
 
 Refer to these when onboarding or running the test suite.

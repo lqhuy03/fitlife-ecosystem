@@ -221,17 +221,18 @@ public class MemberServiceImpl implements MemberService {
     @Override
     @Transactional
     public MemberProfileResponse getMyProfile(String username) {
-        // Tìm user theo email (username trong JWT chính là email ở luồng của chúng ta)
-        Member member = memberRepository.findByEmail(username)
+        // SỬA CHUỖI STRING THÀNH ERROR CODE CHUẨN
+        Member member = memberRepository.findByUser_Username(username)
                 .orElseThrow(() -> new AppException(ErrorCode.MEMBER_NOT_FOUND));
-        // Tận dụng mapper em đã dùng AI tạo ra
+
         return memberMapper.toProfileResponse(member);
     }
 
     @Override
     @Transactional
     public MemberProfileResponse updateMyProfile(String username, MemberUpdateRequest request) {
-        Member member = memberRepository.findByEmail(username)
+        // SỬA CHUỖI STRING THÀNH ERROR CODE CHUẨN
+        Member member = memberRepository.findByUser_Username(username)
                 .orElseThrow(() -> new AppException(ErrorCode.MEMBER_NOT_FOUND));
 
         // Cập nhật thông tin cơ bản

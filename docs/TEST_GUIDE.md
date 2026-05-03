@@ -1,4 +1,6 @@
-# Test Guide (copied)
+# Deprecated copy
 
-This is a copy of the detailed test guide for member profile and BMI tests. See root TEST_GUIDE.md for full content.
+This is a legacy duplicate kept only for archive/reference.
+
+Canonical test guide: `../TEST_GUIDE.md`
 
